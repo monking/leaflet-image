@@ -11,6 +11,7 @@ module.exports = function leafletImage(map, callback) {
     canvas.width = dimensions.x;
     canvas.height = dimensions.y;
     var ctx = canvas.getContext('2d');
+		var sessionTimestamp = +new Date();
 
     // layers are drawn in the same order as they are composed in the DOM:
     // tiles, paths, and then markers
@@ -142,7 +143,7 @@ module.exports = function leafletImage(map, callback) {
             pixelBounds = map.getPixelBounds(),
             minPoint = new L.Point(pixelBounds.min.x, pixelBounds.min.y),
             pixelPoint = map.project(marker.getLatLng()),
-            url = addCacheString(marker._icon.src),
+            url = addCacheString(marker._icon.src, sessionTimestamp),
             im = new Image(),
             options = marker.options.icon.options,
             size = options.iconSize,
@@ -165,8 +166,9 @@ module.exports = function leafletImage(map, callback) {
         im.src = url;
     }
 
-    function addCacheString(url) {
-        return url + ((url.match(/\?/)) ? '&' : '?') + 'cache=' + (+new Date());
+    function addCacheString(url, timestamp) {
+        timestamp = timestamp || +new Date();
+        return url + ((url.match(/\?/)) ? '&' : '?') + 'cache=' + timestamp;
     }
 };
 
